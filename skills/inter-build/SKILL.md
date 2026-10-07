@@ -197,4 +197,4 @@ Only post the findings to the PR as comments if the user asks for that.
 
 ## Hand Off
 
-"M<N> is shipped: <PR link>. `inter/m<N>-<slug>/` holds the full record, and `product.md` is updated. When you're ready, `inter-scope` will help pick the next milestone."
+"M<N> is built and reviewed: <PR link>. `inter/m<N>-<slug>/` holds the full record, and `product.md` is updated. If it has a browser surface, run `inter-verify` before merging to test the whole milestone end to end in a real browser. Otherwise, `inter-scope` will help pick the next milestone."

@@ -1,6 +1,6 @@
 # inter
 
-Four agent skills for building a great product one step at a time: plan before you build, then build in verified slices. They work in any harness that reads `SKILL.md` files (Claude Code, Codex, Cursor and others).
+Agent skills for building a great product one step at a time: plan before you build, then build in verified slices. They work in any harness that reads `SKILL.md` files (Claude Code, Codex, Cursor and others).
 
 ## Install
 
@@ -8,7 +8,7 @@ Four agent skills for building a great product one step at a time: plan before y
 npx skills add KshitijBhardwaj18/specbuilder --all -y
 ```
 
-## The four steps
+## The steps
 
 | Skill | What happens | Output |
 |---|---|---|
@@ -16,6 +16,7 @@ npx skills add KshitijBhardwaj18/specbuilder --all -y
 | `inter-prd` | Defines what the milestone does: core journey, surfaces, behaviour, edge cases, look and feel, acceptance criteria. No code talk. Can be skipped for work with no user-facing surface | `prd.md` |
 | `inter-spec` | A staff-engineer design review. It maps the existing code where the milestone lands, ranks the real decisions (one-way vs two-way doors), and discusses each with options, caveats and a recommendation tied to the goal. Then it sweeps for data, security, performance, rollout and testing concerns. Every contract is decided; internals are left to the build | `spec.md` |
 | `inter-build` | Turns the plan into ordered end-to-end slices, then builds, verifies, commits and ticks each one. Ends with a hands-on review, a secrets check and a PR. A separate agent then reviews each PR against the full plan, the agreed fixes are pushed, and `product.md` is updated | `checklist.md` plus the code |
+| `inter-verify` *(optional)* | Drives the running app in a real browser through the core journey, every acceptance criterion, edge cases, and earlier milestones' journeys as regression, watching the console and network along the way. Failures are fixed in the same PR | `verify.md` |
 
 You run each step by invoking its skill. Starting a fresh conversation between steps is fine, because the files carry the context.
 
