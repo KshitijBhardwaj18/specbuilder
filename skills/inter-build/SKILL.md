@@ -1,6 +1,6 @@
 ---
 name: inter-build
-description: Step 4 of 4 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build). Turns the approved plan into ordered end-to-end slices in inter/<slug>/checklist.md, then builds them one at a time (verify, commit, tick), runs a hands-on final review, and finishes with a secrets check, a push and a PR. Resumes at the first unchecked box. Use after inter-spec, whenever a build session was interrupted, or when the user types /inter-build.
+description: Step 4 of 4 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build). Turns the current milestone's approved plan into ordered end-to-end slices in inter/m<N>-<slug>/checklist.md, then builds them one at a time (verify, commit, tick), runs a hands-on final review, and finishes with a secrets check, a push, a PR, and an update to inter/product.md. Resumes at the first unchecked box. Use after inter-spec, whenever a build session was interrupted, or when the user types /inter-build.
 ---
 
 # inter-build — Build It
@@ -9,20 +9,27 @@ You are a build strategist for ten minutes, then an executor. The thinking alrea
 
 ## Where Are We
 
-The files on disk decide where things stand, not your memory of the conversation. Every feature lives in its own folder, `inter/<slug>/`, at the repo root. List `inter/*/` and read the `status:` frontmatter of each `scope.md`, `prd.md`, `spec.md` and `checklist.md`.
+The files on disk decide where things stand, not your memory of the conversation. Everything lives in `inter/` at the repo root:
 
-- The user names an existing feature, or exactly one is unfinished (its checklist is not `status: done`) → work on that one. If several are unfinished and the user didn't say which, ask.
-- No `inter/` folder, or the user describes a brand-new idea → send them to `inter-scope` and stop.
+- `inter/product.md` describes the whole product: kernel, who it's for, what has shipped, and the ideas list.
+- Each milestone has its own folder, `inter/m<N>-<slug>/`, holding its `scope.md`, `prd.md`, `spec.md` and `checklist.md`.
 
-Say in one sentence where the feature stands, then route:
+Read `product.md` and the `status:` frontmatter of every milestone doc. The current milestone is the one the user names; otherwise it is the unfinished one (its checklist is not `status: done`). If several are unfinished, ask which.
+
+Say in one sentence where things stand, then route:
 
 | State | Next |
 |---|---|
-| scope missing or `draft` | `inter-scope` |
-| prd missing or `draft` (`skipped` counts as finished) | `inter-prd` |
-| spec missing or `draft` | `inter-spec` |
-| checklist missing or not `done` | `inter-build` |
-| checklist `done` | finished; offer to start a new feature |
+| no `inter/product.md` | `inter-scope`, starting a new product |
+| no unfinished milestone | `inter-scope`, defining the next milestone |
+| milestone `scope.md` is `draft` | `inter-scope` |
+| `prd.md` missing or `draft` (`skipped` counts as finished) | `inter-prd` |
+| `spec.md` missing or `draft` | `inter-spec` |
+| `checklist.md` missing or not `done` | `inter-build` |
+
+If the user brings a new idea, add it to **Ideas** in `product.md` and carry on. Planning a new milestone is the job of `inter-scope`.
+
+If the next step is another skill, name it and stop, unless the user explicitly wants to redo this step. In that case, edit the existing doc rather than starting over.
 
 Inside this skill:
 
@@ -40,7 +47,7 @@ Inside this skill:
 
 ## Before You Start
 
-Read `spec.md` (note which headings actually exist, since every ref you write must point at a real one), the PRD's **Core Journey** and **Acceptance Criteria**, and the scope's **Kernel**, **Now** and **Cut**. Load further sections per slice, as the slice's refs point at them.
+Read `spec.md` (note which headings actually exist, since every ref you write must point at a real one), the PRD's **Core Journey** and **Acceptance Criteria**, the milestone scope's **In**, **Out** and **Done Looks Like**, and the **Kernel** and **Cut** sections of `product.md`. Load further sections per slice, as the slice's refs point at them.
 
 ## Plan the Slices
 
@@ -53,14 +60,14 @@ A **slice** is a thin end-to-end increment that makes one real behaviour work. I
 
 Order the slices by these rules:
 
-- **The kernel comes early.** Polished scaffolding around a missing kernel is a failed build.
+- **The milestone's core comes early.** In M1 that is the kernel; polished scaffolding around a missing kernel is a failed build.
 - **Risk comes first:** the unfamiliar API, the odd data source.
-- **Bootstrapping lives inside slice 1.** Never make it a step of its own.
+- **Bootstrapping lives inside slice 1** (M1 only). Never make it a step of its own.
 - **The project is never left broken.** Every slice leaves something working.
 
 Use as few slices as do the job. Prefer a few substantial slices to a ceremonial list.
 
-Write `inter/<slug>/checklist.md` with `status: draft`. **The field labels are a parsing contract, so reproduce them exactly.**
+Write `inter/m<N>-<slug>/checklist.md` with `status: draft`. **The field labels are a parsing contract, so reproduce them exactly.**
 
 ```markdown
 ---
@@ -90,13 +97,14 @@ status: draft
 - [ ] Secrets and history check clean
 - [ ] README and `.env.example` reflect how to run it
 - [ ] Branch pushed and PR opened: <link>
+- [ ] `product.md` updated: milestone logged under Shipped, learnings moved into Ideas
 
 ## Revisions
 ```
 
 ## Approve the Order
 
-Show the slices in order: what works after each one, and why it sits where it does. Make the sequencing logic visible, not just the list. Ask once: "Does this order look right?" If the feedback reaches into product or architecture, fix `prd.md` or `spec.md` in the same pass so the docs never contradict each other. A new feature in the feedback is a scope change, so name its cost first. On a clear yes, set `status: approved`. **Don't write code before that.**
+Show the slices in order: what works after each one, and why it sits where it does. Make the sequencing logic visible, not just the list. Ask once: "Does this order look right?" If the feedback reaches into product or architecture, fix `prd.md` or `spec.md` in the same pass so the docs never contradict each other. A new feature in the feedback is a scope change: name its cost, or park it in **Ideas** in `product.md`. On a clear yes, set `status: approved`. **Don't write code before that.**
 
 ## The Loop
 
@@ -141,10 +149,12 @@ Once every slice is checked:
 1. **Checks:** run the full test, lint and build suite one last time.
 2. **Secrets:** scan the branch's diff and history for keys, tokens, `.env` contents and private data. If anything is found, stop and agree on a fix; exposed credentials need rotating. Never rewrite history silently.
 3. **Docs:** make sure the README explains how to run it and `.env.example` lists every variable, with placeholders only.
-4. **Ship:** with a yes from the user, push the branch and open a PR that summarises what was built, links `inter/<slug>/`, and notes any revisions. If the diff is too big to review in one go, propose splitting it into stacked PRs along slice lines.
+4. **Ship:** with a yes from the user, push the branch and open a PR that summarises what was built, links `inter/m<N>-<slug>/`, and notes any revisions. If the diff is too big to review in one go, propose splitting it into stacked PRs along slice lines.
+
+5. **Update `product.md`:** add `M<N> <name>: <one line> (<PR link>)` under **Shipped**. Put anything the build surfaced (deferred fixes, revisions that point at future work, ideas the user raised) under **Ideas**. Don't plan the next milestone here; that's for `inter-scope`.
 
 Tick each **Finish** box as it lands, then set the checklist to `status: done`.
 
 ## Hand Off
 
-"Built, reviewed and shipped: <PR link>. `inter/<slug>/` holds the full record. Run `inter-scope` for the next one."
+"M<N> is shipped: <PR link>. `inter/m<N>-<slug>/` holds the full record, and `product.md` is updated. When you're ready, `inter-scope` will help pick the next milestone."

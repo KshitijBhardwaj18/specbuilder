@@ -12,22 +12,35 @@ npx skills add KshitijBhardwaj18/specbuilder --all -y
 
 | Skill | What happens | Output |
 |---|---|---|
-| `inter-scope` | Interviews the idea down to its kernel, who it's for, what done looks like, and what's in now, later or cut | `inter/<slug>/scope.md` |
-| `inter-prd` | Defines what it does: core journey, surfaces, behaviour, edge cases, look and feel, acceptance criteria. No code talk. Can be skipped for work with no user-facing surface | `inter/<slug>/prd.md` |
-| `inter-spec` | Defines how it's built, grounded in the existing codebase: stack, components, data, interfaces, failure modes, files, and run/test commands | `inter/<slug>/spec.md` |
-| `inter-build` | Turns the plan into ordered end-to-end slices, then builds, verifies, commits and ticks each one. Ends with a hands-on review, a secrets check, a push and a PR | `inter/<slug>/checklist.md` plus the code |
+| `inter-scope` | First run: interviews the idea down to its kernel and who it's for, then defines M1 only. Later runs: picks the next milestone from what shipped, what was learned and the ideas list | `inter/product.md`, `inter/m<N>-<slug>/scope.md` |
+| `inter-prd` | Defines what the milestone does: core journey, surfaces, behaviour, edge cases, look and feel, acceptance criteria. No code talk. Can be skipped for work with no user-facing surface | `prd.md` |
+| `inter-spec` | Defines how it's built, grounded in the existing code and earlier milestones' decisions: components, data, interfaces, failure modes, files, and run/test commands | `spec.md` |
+| `inter-build` | Turns the plan into ordered end-to-end slices, then builds, verifies, commits and ticks each one. Ends with a hands-on review, a secrets check, a PR, and an update to `product.md` | `checklist.md` plus the code |
 
 You run each step by invoking its skill. Starting a fresh conversation between steps is fine, because the files carry the context.
 
+## Milestones, one at a time
+
+```
+inter/
+  product.md          kernel, who it's for, Shipped log, Ideas, Cut
+  m1-core-loop/       scope.md  prd.md  spec.md  checklist.md
+  m2-sharing/         ...
+```
+
+Only the next milestone is ever planned. Everything beyond it stays a loose, unordered list under **Ideas**. When a milestone ships, `inter-build` logs it under **Shipped** and adds anything the build taught you to **Ideas**. Then `inter-scope` helps you choose the next milestone with that knowledge.
+
+M1 is the kernel plus the core loop: the smallest version that is genuinely good. Each later milestone builds on the existing code and on settled decisions instead of re-planning from scratch.
+
 ## How state works
 
-The `inter/` folder at the repo root is the only state. Each feature gets its own folder under `inter/<slug>/`, and there is no separate progress file.
+The `inter/` folder at the repo root is the only state; there is no separate progress file.
 
-- Every doc has `status: draft | approved` in its frontmatter. A PRD can also be `skipped`, and the checklist becomes `done` once the PR is open.
+- Milestone docs carry `status: draft | approved` in their frontmatter. A PRD can also be `skipped`, and a checklist becomes `done` once its PR is open.
 - Each skill saves a draft as soon as one exists, and marks it `approved` when you say it looks good. There is no second sign-off.
 - `checklist.md` tracks build progress through its `- [ ]` boxes. Plan changes made during the build are recorded under `## Revisions`.
 
-Every skill starts by reading `inter/`, telling you where the feature stands, and sending you to the right step. That means you can invoke any of them at any point.
+Every skill starts by reading `inter/`, telling you where things stand, and sending you to the right step. A new idea that comes up mid-milestone goes into **Ideas** instead of derailing the current work.
 
 ## Layout
 

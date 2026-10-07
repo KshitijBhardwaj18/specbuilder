@@ -1,6 +1,6 @@
 ---
 name: inter-spec
-description: Step 3 of 4 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build). Turns the approved scope and PRD into a technical blueprint grounded in the existing codebase, covering stack, components, data model, interfaces, external services checked against their docs, failure modes, the files that will change, and run and test commands. Saves inter/<slug>/spec.md. Use after inter-prd, or when the user types /inter-spec.
+description: Step 3 of 4 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build). Turns the current milestone's approved scope and PRD into a technical blueprint grounded in the existing codebase, covering stack, components, data model, interfaces, external services checked against their docs, failure modes, the files that will change, and run and test commands. Saves inter/m<N>-<slug>/spec.md. Use after inter-prd, or when the user types /inter-spec.
 ---
 
 # inter-spec — Blueprint the Build
@@ -9,28 +9,34 @@ You are a senior engineer pairing on the design. The user owns the consequential
 
 ## Where Are We
 
-The files on disk decide where things stand, not your memory of the conversation. Every feature lives in its own folder, `inter/<slug>/`, at the repo root. List `inter/*/` and read the `status:` frontmatter of each `scope.md`, `prd.md`, `spec.md` and `checklist.md`.
+The files on disk decide where things stand, not your memory of the conversation. Everything lives in `inter/` at the repo root:
 
-- The user names an existing feature, or exactly one is unfinished (its checklist is not `status: done`) → work on that one. If several are unfinished and the user didn't say which, ask.
-- No `inter/` folder, or the user describes a brand-new idea → send them to `inter-scope` and stop.
+- `inter/product.md` describes the whole product: kernel, who it's for, what has shipped, and the ideas list.
+- Each milestone has its own folder, `inter/m<N>-<slug>/`, holding its `scope.md`, `prd.md`, `spec.md` and `checklist.md`.
 
-Say in one sentence where the feature stands, then route:
+Read `product.md` and the `status:` frontmatter of every milestone doc. The current milestone is the one the user names; otherwise it is the unfinished one (its checklist is not `status: done`). If several are unfinished, ask which.
+
+Say in one sentence where things stand, then route:
 
 | State | Next |
 |---|---|
-| scope missing or `draft` | `inter-scope` |
-| prd missing or `draft` (`skipped` counts as finished) | `inter-prd` |
-| spec missing or `draft` | `inter-spec` |
-| checklist missing or not `done` | `inter-build` |
-| checklist `done` | finished; offer to start a new feature |
+| no `inter/product.md` | `inter-scope`, starting a new product |
+| no unfinished milestone | `inter-scope`, defining the next milestone |
+| milestone `scope.md` is `draft` | `inter-scope` |
+| `prd.md` missing or `draft` (`skipped` counts as finished) | `inter-prd` |
+| `spec.md` missing or `draft` | `inter-spec` |
+| `checklist.md` missing or not `done` | `inter-build` |
+
+If the user brings a new idea, add it to **Ideas** in `product.md` and carry on. Planning a new milestone is the job of `inter-scope`.
 
 If the next step is another skill, name it and stop, unless the user explicitly wants to redo this step. In that case, edit the existing doc rather than starting over.
 
 ## Before You Start
 
 1. Read `scope.md` and `prd.md` in full. The PRD's Core Journey and Acceptance Criteria are what the spec has to deliver.
-2. **Read the codebase before proposing anything.** Look at the stack, folder conventions, the existing helpers, types and patterns this work should reuse, how tests are run, and how the app is started. Reusing what exists beats adding to it. Note what you found; it shapes every recommendation.
-3. **Check unfamiliar ground against real docs.** For any library, API or service the plan depends on, confirm against current documentation, or a quick probe, that it does what the plan assumes. Don't trust memory for versions, endpoints or limits.
+2. **From M2 onward, build on what exists.** Read the earlier milestones' `spec.md` files, especially **Decisions** and **Stack**, and the **Revisions** in their checklists. Settled choices stay settled unless this milestone gives a real reason to revisit one, and if it does, raise it with the user explicitly. The spec covers only what this milestone adds or changes.
+3. **Read the codebase before proposing anything.** Look at the stack, folder conventions, the existing helpers, types and patterns this work should reuse, how tests are run, and how the app is started. Reusing what exists beats adding to it. Note what you found; it shapes every recommendation.
+4. **Check unfamiliar ground against real docs.** For any library, API or service the plan depends on, confirm against current documentation, or a quick probe, that it does what the plan assumes. Don't trust memory for versions, endpoints or limits.
 
 ## The Interview
 
@@ -44,7 +50,7 @@ Expect four or five exchanges. Ask about preferences and constraints first, then
 
 Carry the PRD's Look and Feel into terms the build can act on (tokens, components, copy tone) without redoing design discovery.
 
-## Write `inter/<slug>/spec.md`
+## Write `inter/m<N>-<slug>/spec.md`
 
 Save the draft immediately. Every component gets its own heading, because `inter-build` cites them. Cross-reference PRD headings throughout ("Implements `prd.md > Surfaces > Dashboard`"). Drop any section that doesn't apply.
 
