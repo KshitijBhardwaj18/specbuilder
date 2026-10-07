@@ -1,6 +1,6 @@
 ---
 name: inter-build
-description: Step 4 of 4 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build). Turns the current milestone's approved plan into ordered end-to-end slices in inter/m<N>-<slug>/checklist.md, then builds them one at a time (verify, commit, tick), runs a hands-on final review, and finishes with a secrets check, a push and a PR. Each PR is then reviewed by a separate agent that has the full plan context, the agreed fixes are pushed, and inter/product.md is updated. Resumes at the first unchecked box. Use after inter-spec, whenever a build session was interrupted, or when the user types /inter-build.
+description: Step 4 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build → optional inter-verify). Turns the current milestone's approved plan into ordered end-to-end slices in inter/m<N>-<slug>/checklist.md, then builds them one at a time (verify, commit, tick), runs a hands-on final review, and finishes with a secrets check, a push and a PR. Each PR is then reviewed by a separate agent that has the full plan context, the agreed fixes are pushed, and inter/product.md is updated. Resumes at the first unchecked box. Use after inter-spec, whenever a build session was interrupted, or when the user types /inter-build.
 ---
 
 # inter-build — Build It

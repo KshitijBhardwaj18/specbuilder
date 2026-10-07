@@ -1,6 +1,6 @@
 ---
 name: inter-spec
-description: Step 3 of 4 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build). A staff-engineer design review for the current milestone. Maps how the existing codebase works where the milestone lands, identifies the real decisions, and discusses each one with options, caveats and a recommendation tied to the milestone goal and the product's direction. The agreed design is saved to inter/m<N>-<slug>/spec.md. Use after inter-prd, or when the user types /inter-spec.
+description: Step 3 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build → optional inter-verify). A staff-engineer design review for the current milestone. Maps how the existing codebase works where the milestone lands, identifies the real decisions, and discusses each one with options, caveats and a recommendation tied to the milestone goal and the product's direction. The agreed design is saved to inter/m<N>-<slug>/spec.md. Use after inter-prd, or when the user types /inter-spec.
 ---
 
 # inter-spec — Design Review

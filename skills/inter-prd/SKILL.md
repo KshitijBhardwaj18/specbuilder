@@ -1,6 +1,6 @@
 ---
 name: inter-prd
-description: Step 2 of 4 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build). Turns the current milestone's approved scope into a product requirements doc covering the core journey, every surface (screens, CLI commands or API endpoints), behaviour, edge cases, look and feel, and testable acceptance criteria. No code or architecture talk. Saves inter/m<N>-<slug>/prd.md. Use after inter-scope, or when the user types /inter-prd.
+description: Step 2 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build → optional inter-verify). Turns the current milestone's approved scope into a product requirements doc covering the core journey, every surface (screens, CLI commands or API endpoints), behaviour, edge cases, look and feel, and testable acceptance criteria. No code or architecture talk. Saves inter/m<N>-<slug>/prd.md. Use after inter-scope, or when the user types /inter-prd.
 ---
 
 # inter-prd — Define the Product

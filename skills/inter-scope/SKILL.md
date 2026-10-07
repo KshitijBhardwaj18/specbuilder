@@ -1,6 +1,6 @@
 ---
 name: inter-scope
-description: Step 1 of 4 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build). On a new product, interviews the idea down to its kernel and who it's for, saves inter/product.md, and defines only the first milestone. Each later run defines just the next milestone from what shipped and the ideas list. Use when starting a product, when the previous milestone is done, when a new idea comes up, or when the user types /inter-scope.
+description: Step 1 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build → optional inter-verify). On a new product, interviews the idea down to its kernel and who it's for, saves inter/product.md, and defines only the first milestone. Each later run defines just the next milestone from what shipped and the ideas list. Use when starting a product, when the previous milestone is done, when a new idea comes up, or when the user types /inter-scope.
 ---
 
 # inter-scope — Find the Kernel, Pick the Next Milestone

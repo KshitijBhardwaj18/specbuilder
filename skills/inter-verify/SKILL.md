@@ -1,6 +1,6 @@
 ---
 name: inter-verify
-description: Optional step 5 of the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build → inter-verify). Drives the running app in a real browser to verify the whole milestone end to end. Covers the PRD's core journey, every acceptance criterion, edge cases, and regressions in earlier milestones, collecting evidence for each. Failures are triaged and fixed in the milestone's PR. Results are saved to inter/m<N>-<slug>/verify.md. Use after inter-build and before merging, or when the user types /inter-verify.
+description: Optional step 5 of the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build → inter-verify). Drives the running app in a real browser to verify the whole milestone end to end with exhaustive coverage: every surface, action, state, input, role, acceptance criterion and edge case in the PRD, plus navigation, persistence, failure paths, and regressions in earlier milestones. It keeps a coverage matrix and collects evidence for each case. Failures are triaged and fixed in the milestone's PR. Results are saved to inter/m<N>-<slug>/verify.md. Use after inter-build and before merging, or when the user types /inter-verify.
 ---
 
 # inter-verify — Browser End-to-End
@@ -41,18 +41,32 @@ If the next step is another skill, name it and stop, unless the user explicitly 
 - **Read the plan:** the PRD's **Core Journey**, **Surfaces**, **States and Edge Cases**, **Acceptance Criteria** and **Look and Feel**; the spec's **Run and Verify**, **Risks and Caveats** and **Rollout**; and the checklist's **Revisions**. From M2 onward, also read the core journeys of the milestones listed under **Shipped** in `product.md`, because they are your regression suite.
 - **Pick a browser tool.** Use whatever browser automation the harness provides: a built-in browser pane, a browser extension, or a Playwright or Puppeteer MCP. If none is available, fall back to a Playwright script run from the shell (`npx playwright`), but only with the user's agreement before installing anything.
 
-## 1. Write the Test Plan
+## 1. Write the Test Plan: Cover Every Case
 
-Save the plan to `inter/m<N>-<slug>/verify.md` with `status: draft`. Every scenario has its steps, the expected result, and its PRD ref.
+The goal is **complete coverage of the milestone**, not a sample. Build the plan systematically from the PRD, so every case is tested or consciously skipped with a reason. Nothing gets dropped silently.
+
+**Enumerate, surface by surface.** For every surface in the PRD, list:
+
+- **Every action:** each button, link, form, menu and keyboard shortcut, and what it should do.
+- **Every state:** first run, empty, loading, populated, error, and at a limit (maximum items, long text, many records).
+- **Every input:** for each form field, test a valid value, an empty value, an invalid value, a boundary value (minimum, maximum, length), and special characters or unicode. Check that the validation message matches the PRD.
+- **Every role:** if roles or permissions exist, each role sees and can do exactly what it should, and is blocked from what it shouldn't (including by visiting the URL directly).
+
+**Then add the cross-cutting cases:**
 
 1. **Core journey:** the full path from first contact to the "done" moment, in one continuous run, exactly as a user would do it.
-2. **Acceptance criteria:** one scenario per criterion that isn't already proven by the core journey.
-3. **Edges:** empty and first-run states, invalid input, errors (for example, a failed request), limits, and persistence (reload the page, log out and back in).
-4. **Risks:** anything from the spec's **Risks and Caveats** that can be exercised from the UI.
-5. **Regression:** from M2 onward, the core journeys of earlier milestones.
-6. **Sweep:** across every scenario, watch the browser console for errors and the network for failed requests. Also check the core journey at phone width (about 375px).
+2. **Every acceptance criterion:** each one is mapped to the scenario that proves it.
+3. **Every edge case in the PRD's States and Edge Cases section,** one by one.
+4. **Navigation:** the back and forward buttons, refresh mid-flow, deep-linking straight to an inner page, and opening the same flow in a second tab.
+5. **Persistence:** reload, log out and back in, and confirm data shows up in every place it should.
+6. **Failure paths:** server errors and slow or failed requests (block them via devtools or the tool's network control if possible), and double-submits.
+7. **Risks:** everything from the spec's **Risks and Caveats** that can be exercised from the UI.
+8. **Regression:** from M2 onward, the core journeys of every milestone listed under **Shipped**.
+9. **Sweep, on every scenario:** console errors, failed network requests, the core journey at phone width (about 375px) and on desktop, and keyboard-only use of the core journey (tab order, focus visible, Enter and Escape behave correctly).
 
-Show the plan. The user can trim it or add to it. Then mark it `approved`.
+**Coverage matrix.** At the top of `verify.md`, add a table that maps every PRD item (each surface, acceptance criterion and edge case) to its scenario IDs. Any row with no scenario is a gap: either add a scenario or mark the row `skipped` with a reason. The plan isn't complete until every row is filled.
+
+Show the matrix and the scenario list. The user can mark scenarios as skipped (with a reason) or add more. Then mark the plan `approved`.
 
 ## 2. Set Up
 
@@ -99,6 +113,11 @@ status: draft | approved | passed | failed
 
 Environment: <URL, browser, viewport, date>
 
+## Coverage
+| PRD item | Scenarios | Status |
+|---|---|---|
+| `prd.md > <heading or criterion>` | V1, V4 | covered / skipped (<reason>) |
+
 ## Scenarios
 ### V1: <Scenario> — pass | fail | blocked
 Ref: `prd.md > <heading>`
@@ -110,7 +129,7 @@ Result: … (evidence: screenshot, console line or observation)
 - **<Failure>**: fix (commit `<sha>`) | defer (moved to Ideas) | dismiss (<reason>)
 
 ## Sweep
-Console errors: … · Failed requests: … · Phone width: …
+Console errors: … · Failed requests: … · Phone width: … · Keyboard: …
 ```
 
 ## Hand Off
