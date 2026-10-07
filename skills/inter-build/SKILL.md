@@ -1,6 +1,6 @@
 ---
 name: inter-build
-description: Step 4 of 4 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build). Turns the current milestone's approved plan into ordered end-to-end slices in inter/m<N>-<slug>/checklist.md, then builds them one at a time (verify, commit, tick), runs a hands-on final review, and finishes with a secrets check, a push, a PR, and an update to inter/product.md. Resumes at the first unchecked box. Use after inter-spec, whenever a build session was interrupted, or when the user types /inter-build.
+description: Step 4 of 4 in the inter pipeline (inter-scope → inter-prd → inter-spec → inter-build). Turns the current milestone's approved plan into ordered end-to-end slices in inter/m<N>-<slug>/checklist.md, then builds them one at a time (verify, commit, tick), runs a hands-on final review, and finishes with a secrets check, a push and a PR. Each PR is then reviewed by a separate agent that has the full plan context, the agreed fixes are pushed, and inter/product.md is updated. Resumes at the first unchecked box. Use after inter-spec, whenever a build session was interrupted, or when the user types /inter-build.
 ---
 
 # inter-build — Build It
@@ -97,6 +97,7 @@ status: draft
 - [ ] Secrets and history check clean
 - [ ] README and `.env.example` reflect how to run it
 - [ ] Branch pushed and PR opened: <link>
+- [ ] Code review done: findings triaged, fixes pushed
 - [ ] `product.md` updated: milestone logged under Shipped, learnings moved into Ideas
 
 ## Revisions
@@ -150,9 +151,49 @@ Once every slice is checked:
 2. **Secrets:** scan the branch's diff and history for keys, tokens, `.env` contents and private data. If anything is found, stop and agree on a fix; exposed credentials need rotating. Never rewrite history silently.
 3. **Docs:** make sure the README explains how to run it and `.env.example` lists every variable, with placeholders only.
 4. **Ship:** with a yes from the user, push the branch and open a PR that summarises what was built, links `inter/m<N>-<slug>/`, and notes any revisions. If the diff is too big to review in one go, propose splitting it into stacked PRs along slice lines.
-5. **Update `product.md`:** add `M<N> <name>: <one line> (<PR link>)` under **Shipped**. Put anything the build surfaced (deferred fixes, revisions that point at future work, ideas the user raised) under **Ideas**. Don't plan the next milestone here; that's for `inter-scope`.
+5. **Review:** run **Code Review** below for each PR before going on.
+6. **Update `product.md`:** add `M<N> <name>: <one line> (<PR link>)` under **Shipped**. Put anything the build surfaced (deferred fixes, revisions that point at future work, ideas the user raised) under **Ideas**. Don't plan the next milestone here; that's for `inter-scope`.
 
 Tick each **Finish** box as it lands, then set the checklist to `status: done`.
+
+## Code Review
+
+Review every PR, and every PR in a stack separately, with a **fresh agent**. The builder is too close to its own code, so the review has to come from a context that didn't write it.
+
+**1. Spawn the reviewer.** Start a separate subagent with no build history. Give it file paths, not summaries, so it reads everything first-hand:
+
+- the PR number, plus its base and head branch;
+- `inter/product.md`;
+- the milestone's `scope.md`, `prd.md`, `spec.md` and `checklist.md`, including the **Revisions**;
+- for a stacked PR, the slices that PR covers.
+
+**2. Brief the reviewer.** Tell it to read all of those docs before the diff, then review the PR:
+
+- If the harness has a `/code-review` skill, run it on the PR at high effort, without posting comments. Then layer the plan checks below on top of its findings.
+- Otherwise, review the diff by hand, covering both correctness and the plan checks.
+
+The plan checks:
+
+- **Spec conformance:** every **Decision** is implemented as agreed, every contract in **Data Model** and **Interfaces** matches, and nothing outside the spec slipped in.
+- **Acceptance criteria:** each PRD criterion is actually met by the code, not just claimed in the checklist.
+- **Risks:** each item under **Risks and Caveats** and **Rollout** has its mitigation in place, and migrations are safe and in the right order.
+- **Security:** authentication and authorisation on every new path, input validation at trust boundaries, and no secrets.
+- **Tests:** the critical paths named in **Testing Strategy** are actually covered.
+- **Conventions:** the new code reads like the surrounding codebase, and no existing helper was re-implemented.
+
+The reviewer returns its findings ranked from most to least severe. Each finding has a `file:line`, what's wrong, the concrete failure it causes, and a suggested fix. It changes no files and posts nothing.
+
+**3. Triage with the user.** Show the findings. For each one, the user decides between three outcomes:
+
+- **Fix:** build it, verify it, commit it, and push it to the PR branch.
+- **Defer:** add it to **Ideas** in `product.md` with a link to the PR.
+- **Dismiss:** record the reason it doesn't apply.
+
+Record every finding and its outcome as a line under **Final Review** in the checklist.
+
+**4. Re-review if needed.** If any fix touched a one-way-door decision, or changed more than a few lines, spawn a fresh reviewer for the fix commits only. Otherwise one round is enough.
+
+Only post the findings to the PR as comments if the user asks for that.
 
 ## Hand Off
 
