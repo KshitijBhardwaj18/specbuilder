@@ -150,7 +150,6 @@ Once every slice is checked:
 2. **Secrets:** scan the branch's diff and history for keys, tokens, `.env` contents and private data. If anything is found, stop and agree on a fix; exposed credentials need rotating. Never rewrite history silently.
 3. **Docs:** make sure the README explains how to run it and `.env.example` lists every variable, with placeholders only.
 4. **Ship:** with a yes from the user, push the branch and open a PR that summarises what was built, links `inter/m<N>-<slug>/`, and notes any revisions. If the diff is too big to review in one go, propose splitting it into stacked PRs along slice lines.
-
 5. **Update `product.md`:** add `M<N> <name>: <one line> (<PR link>)` under **Shipped**. Put anything the build surfaced (deferred fixes, revisions that point at future work, ideas the user raised) under **Ideas**. Don't plan the next milestone here; that's for `inter-scope`.
 
 Tick each **Finish** box as it lands, then set the checklist to `status: done`.
