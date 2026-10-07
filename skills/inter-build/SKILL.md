@@ -61,7 +61,7 @@ A **slice** is a thin end-to-end increment that makes one real behaviour work. I
 Order the slices by these rules:
 
 - **The milestone's core comes early.** In M1 that is the kernel; polished scaffolding around a missing kernel is a failed build.
-- **Risk comes first:** the unfamiliar API, the odd data source.
+- **Risk comes first:** the spec's **Open Issues** and highest **Risks and Caveats** get proven in the earliest slices they can be.
 - **Bootstrapping lives inside slice 1** (M1 only). Never make it a step of its own.
 - **The project is never left broken.** Every slice leaves something working.
 
@@ -110,7 +110,7 @@ Show the slices in order: what works after each one, and why it sits where it do
 
 For each unchecked slice, in order:
 
-1. **Build** what `Build:` says, guided by `Refs:`. Follow the existing codebase's conventions and `spec.md > Look and Feel`, not framework defaults. Write it the way you'd want to maintain it.
+1. **Build** what `Build:` says, guided by `Refs:`. Stay within the spec's **Decisions**, follow its **Testing Strategy**, and respect its **Rollout** order for migrations and flags. Follow the existing codebase's conventions and `spec.md > Look and Feel`, not framework defaults. Write it the way you'd want to maintain it.
 2. **Verify** by running exactly what `Verify:` says, and read the result. "Should work" is not verification. Check the PRD acceptance criteria this slice touches.
 3. **Repair** before moving on. Never carry a known failure forward. If you can't fix it, go to **Recovery**.
 4. **Commit** with the `Commit:` message. Do this every slice, without asking.

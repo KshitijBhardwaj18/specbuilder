@@ -14,7 +14,7 @@ npx skills add KshitijBhardwaj18/specbuilder --all -y
 |---|---|---|
 | `inter-scope` | First run: interviews the idea down to its kernel and who it's for, then defines M1 only. Later runs: picks the next milestone from what shipped, what was learned and the ideas list | `inter/product.md`, `inter/m<N>-<slug>/scope.md` |
 | `inter-prd` | Defines what the milestone does: core journey, surfaces, behaviour, edge cases, look and feel, acceptance criteria. No code talk. Can be skipped for work with no user-facing surface | `prd.md` |
-| `inter-spec` | Defines how it's built, grounded in the existing code and earlier milestones' decisions: components, data, interfaces, failure modes, files, and run/test commands | `spec.md` |
+| `inter-spec` | A staff-engineer design review. It maps the existing code where the milestone lands, ranks the real decisions (one-way vs two-way doors), and discusses each with options, caveats and a recommendation tied to the goal. Then it sweeps for data, security, performance, rollout and testing concerns. Every contract is decided; internals are left to the build | `spec.md` |
 | `inter-build` | Turns the plan into ordered end-to-end slices, then builds, verifies, commits and ticks each one. Ends with a hands-on review, a secrets check, a PR, and an update to `product.md` | `checklist.md` plus the code |
 
 You run each step by invoking its skill. Starting a fresh conversation between steps is fine, because the files carry the context.
